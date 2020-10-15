@@ -2,15 +2,6 @@ terraform {
     required_version = ">= 0.12"
 }
 
-locals {
-  all_service_account_roles = concat(var.service_account_roles, [
-    "roles/logging.logWriter",
-    "roles/monitoring.metricWriter",
-    "roles/monitoring.viewer",
-    "roles/stackdriver.resourceMetadata.writer"
-  ])
-}
-
 data "google_compute_network" "network" {
   project = var.network_project_id != null ? var.network_project_id : var.gcp_project
   name    = var.gcp_network
@@ -104,7 +95,7 @@ resource "google_container_cluster" "cluster" {
   }
 
   workload_identity_config {
-    identity_namespace = format("%s.svc.id.goog", var.name)
+    identity_namespace = format("%s.svc.id.goog", var.gcp_project)
   }
 
   dynamic "master_authorized_networks_config" {
