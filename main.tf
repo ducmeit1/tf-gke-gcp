@@ -22,20 +22,6 @@ data "google_compute_subnetwork" "subnetwork" {
   region  = var.gcp_region
 }
 
-resource "google_service_account" "service_account" {
-  project      = var.gcp_project
-  account_id   = var.name
-  display_name = format("Service account for %s", var.name)
-}
-
-resource "google_project_iam_member" "service_account-roles" {
-  for_each = toset(local.all_service_account_roles)
-
-  project = var.project
-  role    = each.value
-  member  = format("serviceAccount:%s", google_service_account.service_account.email)
-}
-
 # ---------------------------------------------------------------------------------------------------------------------
 # Create the GKE Cluster
 # We want to make a cluster with no node pools, and manage them all with the fine-grained google_container_node_pool resource
